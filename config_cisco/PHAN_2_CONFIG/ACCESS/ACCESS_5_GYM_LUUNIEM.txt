@@ -1,0 +1,72 @@
+enable
+configure terminal
+hostname Access5-GYM-LUUNIEM
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 60
+ name FACILITIES
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== TRUNK TO DISTRIBUTION =====
+interface GigabitEthernet0/1
+ description To-DISS-A-Gi1/0/19
+ switchport mode trunk
+ switchport trunk allowed vlan 10,60,70,80
+ no shutdown
+!
+interface GigabitEthernet0/2
+ description To-DISS-B-Gi1/0/19
+ switchport mode trunk
+ switchport trunk allowed vlan 10,60,70,80
+ no shutdown
+!
+! ===== GYM =====
+interface FastEthernet0/1
+ description ACPs22-GYM (Cam9)
+ switchport mode trunk
+ switchport trunk allowed vlan 60,70
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/2
+ description ACPs18-GYM-WIFI
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shutdown
+!
+! ===== LƯU NIỆM =====
+interface FastEthernet0/3
+ description ACPs21-LUUNIEM (Cam10)
+ switchport mode trunk
+ switchport trunk allowed vlan 60,70
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/4
+ description ACPs19-LUUNIEM-WIFI
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ no shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.36 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+snmp-server community resort-public RO
+snmp-server location "Gym - Luu Niem"
+!
+end
+write memory

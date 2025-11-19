@@ -1,0 +1,10 @@
+! Block Guest to Internal
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 10.10.20.0 255.255.254.0
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 10.10.30.0 255.255.255.0
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 10.10.40.0 255.255.255.128
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 10.10.50.0 255.255.255.128
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 10.10.60.0 255.255.255.192
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 10.10.70.0 255.255.255.0
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 10.10.80.0 255.255.255.192
+access-list GUEST-BLOCK extended deny ip 10.10.10.0 255.255.252.0 192.168.99.0 255.255.255.0
+access-list GUEST-BLOCK extended permit ip 10.10.10.0 255.255.252.0 any

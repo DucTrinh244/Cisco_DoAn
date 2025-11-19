@@ -1,0 +1,97 @@
+enable
+configure terminal
+hostname Access1-GIAIRI
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 30
+ name ENTERTAINMENT
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== TRUNK TO DISTRIBUTION =====
+interface GigabitEthernet0/1
+ description To-DISS-A-Gi1/0/24
+ switchport mode trunk
+ switchport trunk allowed vlan 10,30,70,80
+ no shutdown
+!
+interface GigabitEthernet0/2
+ description To-DISS-B-Gi1/0/24
+ switchport mode trunk
+ switchport trunk allowed vlan 10,30,70,80
+ no shutdown
+!
+! ===== ACCESS PORTS =====
+! BAR
+interface FastEthernet0/2
+ description AP1-BAR
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+interface FastEthernet0/5
+ description PC1-BAR
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+! KHU GIẢI TRÍ CHUNG
+interface FastEthernet0/1
+ description ONLY-3-GIAI-TRI (Wireless to Cam1,2,3)
+ switchport mode access
+ switchport access vlan 70
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+! NHÀ HÀNG
+interface FastEthernet0/3
+ description AP2-NHA-HANG
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+! CAFE + SPA
+interface FastEthernet0/4
+ description ONLY-2-CAFE-SPA
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10,30,70,80 priority 32768
+!
+! ===== PORT SECURITY =====
+interface range FastEthernet0/1-5
+ switchport port-security
+ switchport port-security maximum 3
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.31 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+! ===== SNMP =====
+snmp-server community resort-public RO
+snmp-server location "Khu Giai Tri"
+snmp-server contact "IT Team"
+!
+end
+write memory

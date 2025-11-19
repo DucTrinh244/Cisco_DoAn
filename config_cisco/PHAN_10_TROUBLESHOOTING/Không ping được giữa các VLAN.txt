@@ -1,0 +1,14 @@
+! Check routing on Core
+show ip route
+show ip interface brief
+
+! Verify SVI
+show interface Vlan30
+show interface Vlan40
+
+! Enable routing
+ip routing
+
+! Check if interface is up
+interface Vlan30
+ no shutdown

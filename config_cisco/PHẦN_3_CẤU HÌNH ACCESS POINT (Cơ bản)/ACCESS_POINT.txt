@@ -1,0 +1,24 @@
+### Cấu hình chung cho tất cả Access Points
+```
+=== SSID 1: Resort-Guest (VLAN 10) ===
+SSID: Resort-Guest
+Security: WPA2-PSK
+Password: Resort@Guest2025
+VLAN: 10
+Band: 2.4GHz + 5GHz
+Max Clients: 50
+
+=== SSID 2: Resort-Staff (VLAN 30/40/50/60) ===
+SSID: Resort-Staff
+Security: WPA2-Enterprise (RADIUS)
+VLAN: Native (access port VLAN)
+Band: 5GHz preferred
+Max Clients: 30
+
+=== SSID 3: Resort-Room (VLAN 20) ===
+SSID: Resort-Room-[Room Number]
+Security: WPA2-PSK (unique per room)
+VLAN: 20
+Band: 2.4GHz + 5GHz
+Client Isolation: Enabled
+```

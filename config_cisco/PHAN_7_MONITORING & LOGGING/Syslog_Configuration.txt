@@ -1,0 +1,5 @@
+! On Core switches
+logging host 10.10.80.10
+logging trap informational
+logging source-interface Vlan80
+logging on

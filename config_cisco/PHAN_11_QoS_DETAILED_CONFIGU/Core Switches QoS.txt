@@ -1,0 +1,58 @@
+! === CORE 1 & 2 - Advanced QoS ===
+enable
+configure terminal
+
+! Enable QoS globally
+mls qos
+
+! Define class maps
+class-map match-any VOICE-TRAFFIC
+ match ip dscp ef
+ match protocol sip
+
+class-map match-any VIDEO-TRAFFIC
+ match ip dscp af41
+ match ip dscp af42
+ match protocol rtsp
+
+class-map match-any CRITICAL-APP
+ match ip dscp af31
+ match access-group name CRITICAL-ACL
+
+class-map match-any GUEST-TRAFFIC
+ match access-group name GUEST-ACL
+
+! Define policy map
+policy-map WAN-QOS-POLICY
+ class VOICE-TRAFFIC
+  priority percent 15
+  set dscp ef
+ class VIDEO-TRAFFIC
+  bandwidth percent 35
+  set dscp af41
+ class CRITICAL-APP
+  bandwidth percent 25
+  set dscp af31
+ class GUEST-TRAFFIC
+  bandwidth percent 10
+  set dscp cs1
+ class class-default
+  bandwidth percent 15
+  random-detect
+
+! Apply to uplink interfaces
+interface GigabitEthernet1/0/1
+ service-policy output WAN-QOS-POLICY
+ mls qos trust dscp
+
+! Create ACLs for classification
+ip access-list extended CRITICAL-ACL
+ permit tcp any any eq 443
+ permit tcp any any eq 3389
+ permit tcp any eq 1433 any
+
+ip access-list extended GUEST-ACL
+ permit ip 10.10.10.0 0.0.3.255 any
+
+end
+write memory

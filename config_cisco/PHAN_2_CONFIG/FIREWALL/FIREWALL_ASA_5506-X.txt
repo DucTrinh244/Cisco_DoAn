@@ -1,0 +1,107 @@
+enable
+configure terminal
+hostname Firewall-Resort
+!
+! ===== INTERFACE CONFIGURATION =====
+interface GigabitEthernet1/1
+ description To-VIETTEL-Primary
+ nameif OUTSIDE-VIETTEL
+ security-level 0
+ ip address 203.0.114.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/2
+ description To-VNPT-Backup
+ nameif OUTSIDE-VNPT
+ security-level 0
+ ip address 203.0.115.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/3
+ description To-DMZ
+ nameif DMZ
+ security-level 50
+ ip address 192.168.99.1 255.255.255.0
+ no shutdown
+!
+interface GigabitEthernet1/6
+ description To-Core1
+ nameif INSIDE-CORE1
+ security-level 100
+ ip address 10.10.254.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/7
+ description To-Core2
+ nameif INSIDE-CORE2
+ security-level 100
+ ip address 10.10.254.5 255.255.255.252
+ no shutdown
+!
+! ===== NAT CONFIGURATION =====
+object network INSIDE-NETWORK
+ subnet 10.10.0.0 255.255.0.0
+!
+object network DMZ-NETWORK
+ subnet 192.168.99.0 255.255.255.0
+!
+object network WEB-SERVER
+ host 192.168.99.20
+!
+object network DNS-SERVER
+ host 192.168.99.30
+!
+! NAT for Internal Network
+nat (INSIDE-CORE1,OUTSIDE-VIETTEL) source dynamic INSIDE-NETWORK interface
+nat (INSIDE-CORE2,OUTSIDE-VIETTEL) source dynamic INSIDE-NETWORK interface
+nat (INSIDE-CORE1,OUTSIDE-VNPT) source dynamic INSIDE-NETWORK interface
+nat (INSIDE-CORE2,OUTSIDE-VNPT) source dynamic INSIDE-NETWORK interface
+!
+! Static NAT for DMZ Services
+nat (DMZ,OUTSIDE-VIETTEL) source static WEB-SERVER interface service tcp 80 80
+nat (DMZ,OUTSIDE-VIETTEL) source static WEB-SERVER interface service tcp 443 443
+nat (DMZ,OUTSIDE-VIETTEL) source static DNS-SERVER interface service udp 53 53
+!
+! ===== ROUTING =====
+route OUTSIDE-VIETTEL 0.0.0.0 0.0.0.0 203.0.114.2 1
+route OUTSIDE-VNPT 0.0.0.0 0.0.0.0 203.0.115.2 10
+!
+! Routes to Internal Networks via Core switches
+route INSIDE-CORE1 10.10.0.0 255.255.0.0 10.10.254.2 1
+route INSIDE-CORE2 10.10.0.0 255.255.0.0 10.10.254.6 10
+!
+! ===== ACCESS CONTROL =====
+! Allow DMZ to Internet
+access-list DMZ-IN extended permit tcp any any eq www
+access-list DMZ-IN extended permit tcp any any eq https
+access-list DMZ-IN extended permit udp any any eq domain
+access-list DMZ-IN extended deny ip any any
+access-group DMZ-IN in interface DMZ
+!
+! Allow INSIDE to Internet and DMZ
+access-list INSIDE-IN extended permit ip 10.10.0.0 255.255.0.0 any
+access-list INSIDE-IN extended deny ip any any
+access-group INSIDE-IN in interface INSIDE-CORE1
+access-group INSIDE-IN in interface INSIDE-CORE2
+!
+! Allow specific services to DMZ from outside
+access-list OUTSIDE-IN extended permit tcp any host 203.0.114.1 eq www
+access-list OUTSIDE-IN extended permit tcp any host 203.0.114.1 eq https
+access-list OUTSIDE-IN extended permit udp any host 203.0.114.1 eq domain
+access-list OUTSIDE-IN extended deny ip any any
+access-group OUTSIDE-IN in interface OUTSIDE-VIETTEL
+!
+! ===== SECURITY POLICIES =====
+! Prevent Guest WiFi to Internal
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 10.10.20.0 255.255.254.0
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 10.10.30.0 255.255.255.0
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 10.10.40.0 255.255.255.128
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 10.10.50.0 255.255.255.128
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 10.10.60.0 255.255.255.192
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 10.10.70.0 255.255.255.0
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 10.10.80.0 255.255.255.192
+access-list GUEST-ISOLATION extended deny ip 10.10.10.0 255.255.252.0 192.168.99.0 255.255.255.0
+access-list GUEST-ISOLATION extended permit ip 10.10.10.0 255.255.252.0 any
+!
+end
+write memory

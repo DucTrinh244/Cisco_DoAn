@@ -1,0 +1,143 @@
+enable
+configure terminal
+hostname Access7-PHONGHOP-HOINGHỊ
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 50
+ name CONFERENCE
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== TRUNK TO DISTRIBUTION =====
+interface GigabitEthernet0/1
+ description To-DISS-A-Gi1/0/17
+ switchport mode trunk
+ switchport trunk allowed vlan 10,50,70,80
+ no shutdown
+!
+interface GigabitEthernet0/2
+ description To-DISS-B-Gi1/0/17
+ switchport mode trunk
+ switchport trunk allowed vlan 10,50,70,80
+ no shutdown
+!
+! ===== PHÒNG HỌP =====
+interface FastEthernet0/1
+ description ACPs23-PHONGHOP (Cam13)
+ switchport mode trunk
+ switchport trunk allowed vlan 50,70
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/2
+ description ACPs24-PHONGHOP-DEVICES
+ switchport mode trunk
+ switchport trunk allowed vlan 10,50
+ spanning-tree portfast trunk
+ no shutdown
+!
+! ===== HỘI NGHỊ =====
+interface FastEthernet0/3
+ description ACPs25-HOINGHỊ (Cam14)
+ switchport mode trunk
+ switchport trunk allowed vlan 50,70
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/4
+ description ACPs26-HOINGHỊ-DEVICES
+ switchport mode trunk
+ switchport trunk allowed vlan 10,50
+ spanning-tree portfast trunk
+ no shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+!
+! ===== QoS FOR CONFERENCE =====
+mls qos
+!
+interface range FastEthernet0/1-4
+ mls qos trust dscp
+ priority-queue out
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.38 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+snmp-server community resort-public RO
+snmp-server location "Phong Hop - Hoi Nghi"
+!
+end
+write memory
+```
+
+---
+
+## PHẦN 3: CẤU HÌNH ACCESS POINT (Cơ bản)
+
+### Cấu hình chung cho tất cả Access Points
+```
+=== SSID 1: Resort-Guest (VLAN 10) ===
+SSID: Resort-Guest
+Security: WPA2-PSK
+Password: Resort@Guest2025
+VLAN: 10
+Band: 2.4GHz + 5GHz
+Max Clients: 50
+
+=== SSID 2: Resort-Staff (VLAN 30/40/50/60) ===
+SSID: Resort-Staff
+Security: WPA2-Enterprise (RADIUS)
+VLAN: Native (access port VLAN)
+Band: 5GHz preferred
+Max Clients: 30
+
+=== SSID 3: Resort-Room (VLAN 20) ===
+SSID: Resort-Room-[Room Number]
+Security: WPA2-PSK (unique per room)
+VLAN: 20
+Band: 2.4GHz + 5GHz
+Client Isolation: Enabled
+```
+
+---
+
+## PHẦN 4: CẤU HÌNH CAMERA IP
+
+### Cấu hình Network cho Camera
+```
+VLAN: 70 (SECURITY)
+IP Range: 10.10.70.100 - 10.10.70.200
+Gateway: 10.10.70.1
+DNS: 192.168.99.30
+NVR Server: 10.10.70.10
+
+Camera List:
+- Cam1 (Bar): 10.10.70.101
+- Cam2 (Bar): 10.10.70.102
+- Cam3 (Bar): 10.10.70.103
+- Cam4 (An Ninh): 10.10.70.104
+- Cam5 (Phòng A): 10.10.70.105
+- Cam6 (Phòng B): 10.10.70.106
+- Cam7 (Phòng C): 10.10.70.107
+- Cam8 (Phòng D): 10.10.70.108
+- Cam9 (Gym): 10.10.70.109
+- Cam10 (Lưu Niệm): 10.10.70.110
+- Cam11 (Tiếp Khách): 10.10.70.111
+- Cam12 (Lễ Tân): 10.10.70.112
+- Cam13 (Phòng Họp): 10.10.70.113
+- Cam14 (Hội Nghị): 10.10.70.114
+
+Streaming Protocol: RTSP
+Recording: 24/7 to NVR
+Resolution: 1080p
+FPS: 15-25
+Bitrate: 2-4 Mbps

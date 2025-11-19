@@ -1,0 +1,43 @@
+enable
+configure terminal
+hostname DMZ-Switch
+!
+vlan 99
+ name DMZ
+!
+interface GigabitEthernet0/1
+ description To-Firewall-g1/3
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+ no shutdown
+!
+interface FastEthernet0/1
+ description PC-Kythuat
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+ no shutdown
+!
+interface FastEthernet0/2
+ description Web-Server
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+ no shutdown
+!
+interface FastEthernet0/3
+ description DNS-Server
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+ no shutdown
+!
+interface Vlan99
+ ip address 10.10.80.40 255.255.255.192
+ no shutdown
+!
+ip default-gateway 192.168.99.1
+!
+end
+write memory

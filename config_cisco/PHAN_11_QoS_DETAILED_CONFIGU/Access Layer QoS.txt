@@ -1,0 +1,13 @@
+! === ACCESS SWITCHES ===
+! Mark traffic at edge
+interface range FastEthernet0/1-24
+ mls qos trust cos
+ switchport priority extend trust
+ 
+! Voice VLAN configuration (if VoIP phones used)
+interface range FastEthernet0/10-15
+ switchport voice vlan 100
+ mls qos trust cos
+
+end
+write memory

@@ -1,0 +1,245 @@
+# === TEST 1: Core Switch Failover ===
+# On Core1
+enable
+configure terminal
+interface GigabitEthernet1/0/1
+ shutdown
+
+# Verify failover
+show standby brief
+# HSRP should show Core2 as Active
+
+# Restore
+interface GigabitEthernet1/0/1
+ no shutdown
+
+# === TEST 2: ISP Failover ===
+# On Router VIETTEL
+interface GigabitEthernet0/1
+ shutdown
+
+# Check routing on Core1
+show ip route
+# Should use VNPT path
+
+# Restore
+interface GigabitEthernet0/1
+ no shutdown
+
+# === TEST 3: Distribution Layer Failover ===
+# Disconnect DISS-A from Core1
+# Traffic should automatically use DISS-B
+
+# On DISS-A
+interface GigabitEthernet1/0/1
+ shutdown
+
+# Verify on Access switches
+show spanning-tree vlan 10
+# Root port should change to Gi0/2 (to DISS-B)
+
+# === TEST 4: Dual-Homed Access Switch ===
+# Simulate one uplink failure
+# On Access1
+interface GigabitEthernet0/1
+ shutdown
+
+# Verify connectivity
+ping 10.10.30.1
+# Should still work via Gi0/2
+```
+
+---
+
+## PHẦN 14: CAPACITY PLANNING
+
+### Bandwidth Requirements
+```
+=== TOTAL BANDWIDTH CALCULATION ===
+
+1. GUEST WIFI (VLAN 10)
+   - Users: 200 concurrent
+   - Per user: 5 Mbps avg
+   - Total: 1 Gbps
+   - Burstable: 2 Gbps
+
+2. CAMERA (VLAN 70)
+   - Cameras: 14 @ 4 Mbps each
+   - Total: 56 Mbps
+   - Recording: 24/7
+   - Retention: 30 days
+   - Storage: 14 cameras × 4 Mbps × 3600s × 24h × 30 days / 8 = ~5.4 TB
+
+3. ROOM DEVICES (VLAN 20)
+   - Smart TV streaming: 80 rooms × 10 Mbps = 800 Mbps peak
+   - IoT devices: minimal
+
+4. STAFF (VLANs 30,40,50,60)
+   - Users: 50
+   - Per user: 2 Mbps avg
+   - Total: 100 Mbps
+
+5. TOTAL INTERNET BANDWIDTH NEEDED
+   - Minimum: 2 Gbps
+   - Recommended: 
+     * VIETTEL: 2 Gbps (primary)
+     * VNPT: 1 Gbps (backup)
+
+=== SWITCH PORT REQUIREMENTS ===
+- Core Layer: 10G uplinks, 1G downlinks
+- Distribution: 10G uplinks, 1G downlinks  
+- Access: 1G uplinks, 100M/1G access ports
+
+=== POWER REQUIREMENTS (PoE) ===
+Access Switches need PoE+ (802.3at):
+- AP: 15W each × 25 APs = 375W
+- Cameras: 8W each × 14 = 112W
+- IP Phones: 7W each × 20 = 140W
+- Total PoE: ~627W
+- Overhead 30%: 815W total
+- Switches: 2960-24PC (370W) × 8 = 2960W available ✓
+```
+
+---
+
+## PHẦN 15: MAINTENANCE SCHEDULE
+
+### Weekly Tasks
+```
+[ ] Check switch logs for errors
+[ ] Verify backup completion
+[ ] Review bandwidth utilization
+[ ] Check camera recording status
+[ ] Test guest WiFi connectivity
+```
+
+### Monthly Tasks
+```
+[ ] Firmware updates check
+[ ] Failover testing (Core, ISP)
+[ ] Security scan
+[ ] Capacity review
+[ ] Clean switch ports (dust)
+[ ] UPS battery test
+```
+
+### Quarterly Tasks
+```
+[ ] Full disaster recovery test
+[ ] Password rotation
+[ ] Access list review
+[ ] VLAN optimization
+[ ] Cable certification
+[ ] Performance baseline update
+```
+
+---
+
+## PHẦN 16: DOCUMENTATION CHECKLIST
+
+### ✅ Hoàn thành các file sau:
+```
+✓ Network_Diagram.pdf
+✓ IP_Address_Plan.xlsx
+✓ VLAN_Design.xlsx
+✓ Device_Inventory.xlsx
+✓ Configuration_Backup/
+  ✓ Core1_config.txt
+  ✓ Core2_config.txt
+  ✓ DISS-A_config.txt
+  ✓ DISS-B_config.txt
+  ✓ Access1-7_configs.txt
+  ✓ Firewall_config.txt
+  ✓ Router_configs.txt
+✓ Security_Policy.pdf
+✓ Disaster_Recovery_Plan.pdf
+✓ SOP_Troubleshooting.pdf
+✓ Maintenance_Schedule.xlsx
+✓ Contact_List.xlsx (vendors, ISP, support)
+```
+
+---
+
+## PHẦN 17: FINAL VERIFICATION CHECKLIST
+
+### 🎯 Pre-Production Checklist
+```
+PHYSICAL LAYER:
+[ ] All cables labeled and documented
+[ ] Patch panels organized
+[ ] Cable certification completed
+[ ] Rack layout optimized for cooling
+[ ] Power redundancy verified (UPS)
+[ ] Console cables accessible
+
+CONFIGURATION:
+[ ] All devices configured per standard
+[ ] Hostname convention consistent
+[ ] Management IPs documented
+[ ] SNMP communities secured
+[ ] SSH enabled, Telnet disabled
+[ ] Passwords strong and documented (securely)
+
+CONNECTIVITY:
+[ ] All uplinks up/up
+[ ] Spanning tree converged
+[ ] HSRP/VRRP active/standby correct
+[ ] Inter-VLAN routing working
+[ ] Internet connectivity via both ISPs
+[ ] NAT translations working
+
+SECURITY:
+[ ] Firewall rules tested
+[ ] Guest isolation verified
+[ ] Port security enabled
+[ ] DHCP snooping active
+[ ] DAI enabled on access VLANs
+[ ] ACLs applied and tested
+
+SERVICES:
+[ ] DHCP pools distributing addresses
+[ ] DNS resolution working
+[ ] Web server accessible from Internet
+[ ] NTP synchronized
+[ ] Syslog collecting logs
+[ ] SNMP monitoring active
+
+TESTING:
+[ ] Failover scenarios tested
+[ ] Bandwidth tests completed
+[ ] VoIP quality verified (if applicable)
+[ ] Camera streams stable
+[ ] WiFi coverage mapped
+[ ] Load testing performed
+
+DOCUMENTATION:
+[ ] As-built diagrams complete
+[ ] Configuration backups secured
+[ ] Procedures documented
+[ ] Contact list updated
+[ ] Handover documentation ready
+```
+
+---
+
+## PHẦN 18: CONTACT & SUPPORT
+
+### 📞 Emergency Contacts
+```
+NETWORK TEAM:
+- Senior Engineer: +84 xxx xxx xxx
+- On-call Support: +84 xxx xxx xxx
+
+ISP SUPPORT:
+- VIETTEL: 18008000 (24/7)
+- VNPT: 18001166 (24/7)
+
+VENDORS:
+- Cisco TAC: [Contract Number]
+- Hardware Vendor: +84 xxx xxx xxx
+
+ESCALATION:
+- Level 1: Help Desk
+- Level 2: Network Engineer
+- Level 3: Senior Network Engineer
+- Level 4: Vendor TAC

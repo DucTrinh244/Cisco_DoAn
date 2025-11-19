@@ -1,0 +1,25 @@
+### 🔒 Security Policies Summary
+```
+1. GUEST ISOLATION (VLAN 10)
+   - Không truy cập được VLANs khác
+   - Chỉ truy cập Internet
+   - Bandwidth limit: 10 Mbps/user
+   - Session timeout: 4 hours
+
+2. CAMERA NETWORK (VLAN 70)
+   - Chỉ NVR và Admin truy cập được
+   - Không route ra Internet trực tiếp
+   - Port security enabled
+   - 802.1X authentication (nếu camera hỗ trợ)
+
+3. MANAGEMENT (VLAN 80)
+   - SSH only (no Telnet)
+   - ACL: chỉ từ Admin PC
+   - SNMP v3 only
+   - Logging enabled
+
+4. STAFF NETWORKS (VLAN 30,40,50,60)
+   - 802.1X authentication
+   - MAC filtering
+   - DHCP snooping
+   - DAI (Dynamic ARP Inspection)

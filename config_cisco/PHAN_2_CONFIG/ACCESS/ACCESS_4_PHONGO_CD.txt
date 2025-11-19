@@ -1,0 +1,65 @@
+enable
+configure terminal
+hostname Access4-PHONG-CD
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 20
+ name ROOM-DEVICES
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== TRUNK TO DISTRIBUTION =====
+interface GigabitEthernet0/1
+ description To-DISS-A-Gi1/0/20
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,70,80
+ no shutdown
+!
+interface GigabitEthernet0/2
+ description To-DISS-B-Gi1/0/20
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,70,80
+ no shutdown
+!
+! ===== ACCESS POINTS =====
+interface FastEthernet0/1
+ description ACPs10
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/2
+ description ACPs11
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/3
+ description ACPs12 (Cam7-P3, Cam8-P4)
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,70
+ spanning-tree portfast trunk
+ no shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10,20,70,80 priority 32768
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.35 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+snmp-server community resort-public RO
+snmp-server location "Khu Phong O C-D"
+!
+end
+write memory

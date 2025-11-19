@@ -1,0 +1,20 @@
+    enable
+    configure terminal
+    hostname Router-VIETTEL
+    !
+    interface GigabitEthernet0/1
+    description To-ISP
+    ip address 203.0.113.6 255.255.255.252
+    no shutdown
+    !
+    interface GigabitEthernet0/0
+    description To-Firewall-g1/1
+    ip address 203.0.114.2 255.255.255.252
+    no shutdown
+    !
+    ip route 0.0.0.0 0.0.0.0 203.0.113.5
+    ip route 10.10.0.0 255.255.0.0 203.0.114.1
+    ip route 192.168.99.0 255.255.255.0 203.0.114.1
+    !
+    end
+    write memory

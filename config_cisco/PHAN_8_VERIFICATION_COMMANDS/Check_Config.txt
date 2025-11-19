@@ -1,0 +1,25 @@
+! === CORE SWITCHES ===
+show ip interface brief
+show vlan brief
+show ip route
+show standby brief
+show spanning-tree summary
+show etherchannel summary
+
+! === DISTRIBUTION SWITCHES ===
+show vlan brief
+show interfaces trunk
+show spanning-tree root
+
+! === ACCESS SWITCHES ===
+show vlan brief
+show interfaces status
+show port-security
+show mac address-table
+
+! === FIREWALL ===
+show interface ip brief
+show route
+show nat
+show access-list
+show failover

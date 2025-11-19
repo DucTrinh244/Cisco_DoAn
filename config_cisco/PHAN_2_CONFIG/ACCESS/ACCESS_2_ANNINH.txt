@@ -1,0 +1,70 @@
+enable
+configure terminal
+hostname Access2-ANNINH
+!
+! ===== VLAN CREATION =====
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== TRUNK TO DISTRIBUTION =====
+interface GigabitEthernet0/1
+ description To-DISS-A-Gi1/0/23
+ switchport mode trunk
+ switchport trunk allowed vlan 70,80
+ no shutdown
+!
+interface GigabitEthernet0/2
+ description To-DISS-B-Gi1/0/23
+ switchport mode trunk
+ switchport trunk allowed vlan 70,80
+ no shutdown
+!
+! ===== ACCESS PORTS - SERVER VLAN =====
+interface FastEthernet0/1
+ description AP5-ANNINH (connects to Cam4)
+ switchport mode access
+ switchport access vlan 70
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+interface FastEthernet0/3
+ description PC2-ANNINH
+ switchport mode access
+ switchport access vlan 80
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+interface FastEthernet0/2
+ description LAP5-ANNINH
+ switchport mode access
+ switchport access vlan 80
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+spanning-tree vlan 70,80 priority 32768
+!
+! ===== PORT SECURITY =====
+interface range FastEthernet0/1-3
+ switchport port-security
+ switchport port-security maximum 2
+ switchport port-security violation restrict
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.32 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+snmp-server community resort-public RO
+snmp-server location "Khu An Ninh Ky Thuat"
+!
+end
+write memory

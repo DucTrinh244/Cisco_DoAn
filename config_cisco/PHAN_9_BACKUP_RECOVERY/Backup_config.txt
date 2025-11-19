@@ -1,0 +1,39 @@
+#!/bin/bash
+# backup-configs.sh
+
+DATE=$(date +%Y%m%d)
+TFTP_SERVER="10.10.80.50"
+
+# List of devices
+DEVICES=(
+    "10.10.80.10:Core1"
+    "10.10.80.11:Core2"
+    "10.10.80.20:DISS-A"
+    "10.10.80.21:DISS-B"
+    "10.10.80.31:Access1"
+    "10.10.80.32:Access2"
+    "10.10.80.33:AccessServer"
+    "10.10.80.34:Access3"
+    "10.10.80.35:Access4"
+    "10.10.80.36:Access5"
+    "10.10.80.37:Access6"
+    "10.10.80.38:Access7"
+)
+
+for DEVICE in "${DEVICES[@]}"; do
+    IP="${DEVICE%%:*}"
+    NAME="${DEVICE##*:}"
+    
+    echo "Backing up $NAME ($IP)..."
+    
+    # SSH to device and backup
+    sshpass -p 'admin_password' ssh -o StrictHostKeyChecking=no admin@$IP \
+        "copy running-config tftp://${TFTP_SERVER}/${NAME}_${DATE}.cfg" << EOF
+${NAME}_${DATE}.cfg
+
+EOF
+    
+    sleep 2
+done
+
+echo "Backup completed: $(date)"

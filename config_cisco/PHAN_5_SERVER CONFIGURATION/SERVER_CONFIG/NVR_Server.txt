@@ -1,0 +1,17 @@
+### 📹 NVR Server (An Ninh - 10.10.70.10)
+```
+OS: Windows Server 2019 / Linux
+Software: Blue Iris / Milestone / Synology Surveillance Station
+
+Network Config:
+IP: 10.10.70.10/24
+Gateway: 10.10.70.1
+VLAN: 70
+Storage: RAID 5 (minimum 4TB per camera for 30 days)
+
+Camera Connections: RTSP
+Recording Schedule: 24/7
+Motion Detection: Enabled
+Retention: 30 days
+Remote Access: Via VPN only
+```

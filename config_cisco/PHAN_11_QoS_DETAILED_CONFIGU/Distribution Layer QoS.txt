@@ -1,0 +1,20 @@
+! === DISS-A & B ===
+enable
+configure terminal
+
+mls qos
+
+! Trust DSCP from Access layer
+interface range GigabitEthernet1/0/17-24
+ mls qos trust dscp
+ 
+! Set queue buffer allocation
+mls qos queue-set output 1 buffers 10 20 30 40
+mls qos queue-set output 1 threshold 1 80 90 100 100
+
+! Apply queue-set to interfaces
+interface range GigabitEthernet1/0/1-5
+ queue-set 1
+
+end
+write memory

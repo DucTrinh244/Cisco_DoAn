@@ -1,0 +1,117 @@
+enable
+configure terminal
+hostname DISS-A-Primary
+!
+ip routing
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 20
+ name ROOM-DEVICES
+vlan 30
+ name ENTERTAINMENT
+vlan 40
+ name RECEPTION
+vlan 50
+ name CONFERENCE
+vlan 60
+ name FACILITIES
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== UPLINK TO CORE =====
+interface GigabitEthernet1/0/1
+ description To-Core1-Primary
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/2
+ description To-Core2-Backup
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ no shutdown
+!
+! ===== LINK TO DISS-B =====
+interface GigabitEthernet1/0/5
+ description To-DISS-B
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ no shutdown
+!
+! ===== DOWNLINK TO ACCESS SWITCHES =====
+interface GigabitEthernet1/0/24
+ description To-Access1-KHU-GIAI-TRI
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,30,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/23
+ description To-Access2-AN-NINH
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/22
+ description To-Access3-PHONG-AB
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/21
+ description To-Access4-PHONG-CD
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/20
+ description To-Access5-GYM-LUUNIEM
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,60,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/19
+ description To-Access6-TIEPKHACH-LETAN
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,40,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/18
+ description To-Access7-PHONGHOP-HOINGHỊ
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,50,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/17
+ description To-Access8-SPARE
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10,20,30,40,50,60,70,80 priority 16384
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.20 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+end
+write memory

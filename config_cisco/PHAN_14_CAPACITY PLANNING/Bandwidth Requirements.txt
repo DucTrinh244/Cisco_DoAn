@@ -1,0 +1,46 @@
+### Bandwidth Requirements
+```
+=== TOTAL BANDWIDTH CALCULATION ===
+
+1. GUEST WIFI (VLAN 10)
+   - Users: 200 concurrent
+   - Per user: 5 Mbps avg
+   - Total: 1 Gbps
+   - Burstable: 2 Gbps
+
+2. CAMERA (VLAN 70)
+   - Cameras: 14 @ 4 Mbps each
+   - Total: 56 Mbps
+   - Recording: 24/7
+   - Retention: 30 days
+   - Storage: 14 cameras × 4 Mbps × 3600s × 24h × 30 days / 8 = ~5.4 TB
+
+3. ROOM DEVICES (VLAN 20)
+   - Smart TV streaming: 80 rooms × 10 Mbps = 800 Mbps peak
+   - IoT devices: minimal
+
+4. STAFF (VLANs 30,40,50,60)
+   - Users: 50
+   - Per user: 2 Mbps avg
+   - Total: 100 Mbps
+
+5. TOTAL INTERNET BANDWIDTH NEEDED
+   - Minimum: 2 Gbps
+   - Recommended: 
+     * VIETTEL: 2 Gbps (primary)
+     * VNPT: 1 Gbps (backup)
+
+=== SWITCH PORT REQUIREMENTS ===
+- Core Layer: 10G uplinks, 1G downlinks
+- Distribution: 10G uplinks, 1G downlinks  
+- Access: 1G uplinks, 100M/1G access ports
+
+=== POWER REQUIREMENTS (PoE) ===
+Access Switches need PoE+ (802.3at):
+- AP: 15W each × 25 APs = 375W
+- Cameras: 8W each × 14 = 112W
+- IP Phones: 7W each × 20 = 140W
+- Total PoE: ~627W
+- Overhead 30%: 815W total
+- Switches: 2960-24PC (370W) × 8 = 2960W available ✓
+```

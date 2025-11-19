@@ -1,0 +1,86 @@
+enable
+configure terminal
+hostname Access6-TIEPKHACH-LETAN
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 40
+ name RECEPTION
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== TRUNK TO DISTRIBUTION =====
+interface GigabitEthernet0/1
+ description To-DISS-A-Gi1/0/18
+ switchport mode trunk
+ switchport trunk allowed vlan 10,40,70,80
+ no shutdown
+!
+interface GigabitEthernet0/2
+ description To-DISS-B-Gi1/0/18
+ switchport mode trunk
+ switchport trunk allowed vlan 10,40,70,80
+ no shutdown
+!
+! ===== TIẾP KHÁCH =====
+interface FastEthernet0/1
+ description ACPs17-TIEPKHACH (Cam11)
+ switchport mode trunk
+ switchport trunk allowed vlan 40,70
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/2
+ description ACPs16-TIEPKHACH-WIFI
+ switchport mode trunk
+ switchport trunk allowed vlan 10,40
+ spanning-tree portfast trunk
+ no shutdown
+!
+! ===== LỄ TÂN =====
+interface FastEthernet0/3
+ description ACPs20-LETAN (Cam12)
+ switchport mode trunk
+ switchport trunk allowed vlan 40,70
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/4
+ description ACPs15-LETAN-WIFI
+ switchport mode trunk
+ switchport trunk allowed vlan 10,40
+ spanning-tree portfast trunk
+ no shutdown
+!
+interface FastEthernet0/5
+ description PC3-LETAN
+ switchport mode access
+ switchport access vlan 40
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ no shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+!
+! ===== PORT SECURITY =====
+interface FastEthernet0/5
+ switchport port-security
+ switchport port-security maximum 1
+ switchport port-security violation shutdown
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.37 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+snmp-server community resort-public RO
+snmp-server location "Tiep Khach - Le Tan"
+!
+end
+write memory

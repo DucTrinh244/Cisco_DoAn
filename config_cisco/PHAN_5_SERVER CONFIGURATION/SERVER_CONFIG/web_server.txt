@@ -1,0 +1,24 @@
+Web Server (DMZ - 192.168.99.20)
+# Ubuntu/Debian
+apt update && apt upgrade -y
+apt install nginx -y
+
+# Nginx config
+server {
+    listen 80;
+    listen 443 ssl;
+    server_name resort.example.com;
+    
+    ssl_certificate /etc/ssl/certs/resort.crt;
+    ssl_certificate_key /etc/ssl/private/resort.key;
+    
+    root /var/www/resort;
+    index index.html;
+    
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}
+
+systemctl enable nginx
+systemctl start nginx

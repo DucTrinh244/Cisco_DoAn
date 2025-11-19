@@ -1,0 +1,30 @@
+### Weekly Tasks
+```
+[ ] Check switch logs for errors
+[ ] Verify backup completion
+[ ] Review bandwidth utilization
+[ ] Check camera recording status
+[ ] Test guest WiFi connectivity
+```
+
+### Monthly Tasks
+```
+[ ] Firmware updates check
+[ ] Failover testing (Core, ISP)
+[ ] Security scan
+[ ] Capacity review
+[ ] Clean switch ports (dust)
+[ ] UPS battery test
+```
+
+### Quarterly Tasks
+```
+[ ] Full disaster recovery test
+[ ] Password rotation
+[ ] Access list review
+[ ] VLAN optimization
+[ ] Cable certification
+[ ] Performance baseline update
+```
+
+---

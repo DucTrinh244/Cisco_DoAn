@@ -1,0 +1,12 @@
+DMZ:
+- PC-Kythuat: 192.168.99.10
+- Web Server: 192.168.99.20
+- DNS Server: 192.168.99.30
+
+Management:
+- Core1: 10.10.80.10
+- Core2: 10.10.80.11
+- DISS-A: 10.10.80.20
+- DISS-B: 10.10.80.21
+- Access1-8: 10.10.80.31-38
+- DMZ Switch: 10.10.80.40

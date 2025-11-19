@@ -1,0 +1,149 @@
+enable
+configure terminal
+hostname Core2-Backup
+!
+ip routing
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 20
+ name ROOM-DEVICES
+vlan 30
+ name ENTERTAINMENT
+vlan 40
+ name RECEPTION
+vlan 50
+ name CONFERENCE
+vlan 60
+ name FACILITIES
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+vlan 99
+ name DMZ
+!
+! ===== SVI INTERFACES =====
+interface Vlan10
+ description Gateway-GUEST-WIFI
+ ip address 10.10.10.2 255.255.252.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan20
+ description Gateway-ROOM-DEVICES
+ ip address 10.10.20.2 255.255.254.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan30
+ description Gateway-ENTERTAINMENT
+ ip address 10.10.30.2 255.255.255.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan40
+ description Gateway-RECEPTION
+ ip address 10.10.40.2 255.255.255.128
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan50
+ description Gateway-CONFERENCE
+ ip address 10.10.50.2 255.255.255.128
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan60
+ description Gateway-FACILITIES
+ ip address 10.10.60.2 255.255.255.192
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan70
+ description Gateway-SECURITY
+ ip address 10.10.70.2 255.255.255.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan80
+ description Gateway-MANAGEMENT
+ ip address 10.10.80.2 255.255.255.192
+ no shutdown
+!
+interface Vlan99
+ description Gateway-DMZ
+ ip address 192.168.99.253 255.255.255.0
+ no shutdown
+!
+! ===== PHYSICAL INTERFACES =====
+interface GigabitEthernet1/0/1
+ description To-Firewall-g1/7
+ no switchport
+ ip address 10.10.254.6 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/0/5
+ description To-Core1
+ no switchport
+ ip address 10.10.255.2 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/0/24
+ description To-DISS-B
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/23
+ description To-DISS-A
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ no shutdown
+!
+! ===== HSRP CONFIGURATION (STANDBY) =====
+interface Vlan10
+ standby 10 ip 10.10.10.254
+ standby 10 priority 100
+!
+interface Vlan20
+ standby 20 ip 10.10.20.254
+ standby 20 priority 100
+!
+interface Vlan30
+ standby 30 ip 10.10.30.254
+ standby 30 priority 100
+!
+interface Vlan40
+ standby 40 ip 10.10.40.254
+ standby 40 priority 100
+!
+interface Vlan50
+ standby 50 ip 10.10.50.254
+ standby 50 priority 100
+!
+interface Vlan60
+ standby 60 ip 10.10.60.254
+ standby 60 priority 100
+!
+interface Vlan70
+ standby 70 ip 10.10.70.254
+ standby 70 priority 100
+!
+interface Vlan80
+ standby 80 ip 10.10.80.254
+ standby 80 priority 100
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10,20,30,40,50,60,70,80 priority 8192
+!
+! ===== ROUTING =====
+ip route 0.0.0.0 0.0.0.0 10.10.254.5
+ip route 203.0.115.0 255.255.255.252 10.10.254.5
+!
+end
+write memory

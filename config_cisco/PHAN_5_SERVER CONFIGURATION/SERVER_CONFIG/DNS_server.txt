@@ -1,0 +1,59 @@
+DNS Server (DMZ - 192.168.99.30)
+# Install BIND9
+apt install bind9 bind9utils -y
+
+# /etc/bind/named.conf.local
+zone "resort.local" {
+    type master;
+    file "/etc/bind/db.resort.local";
+};
+
+# /etc/bind/db.resort.local
+$TTL 604800
+@   IN  SOA ns1.resort.local. admin.resort.local. (
+            2025111801  ; Serial
+            604800      ; Refresh
+            86400       ; Retry
+            2419200     ; Expire
+            604800 )    ; Negative Cache TTL
+;
+@       IN  NS      ns1.resort.local.
+@       IN  A       192.168.99.30
+ns1     IN  A       192.168.99.30
+web     IN  A       192.168.99.20
+wifi    IN  A       10.10.10.1
+booking IN  A       192.168.99.20
+
+systemctl restart bind9
+```
+
+
+---
+
+## PHẦN 6: BẢO MẬT & ACCESS CONTROL
+
+### 🔒 Security Policies Summary
+```
+1. GUEST ISOLATION (VLAN 10)
+   - Không truy cập được VLANs khác
+   - Chỉ truy cập Internet
+   - Bandwidth limit: 10 Mbps/user
+   - Session timeout: 4 hours
+
+2. CAMERA NETWORK (VLAN 70)
+   - Chỉ NVR và Admin truy cập được
+   - Không route ra Internet trực tiếp
+   - Port security enabled
+   - 802.1X authentication (nếu camera hỗ trợ)
+
+3. MANAGEMENT (VLAN 80)
+   - SSH only (no Telnet)
+   - ACL: chỉ từ Admin PC
+   - SNMP v3 only
+   - Logging enabled
+
+4. STAFF NETWORKS (VLAN 30,40,50,60)
+   - 802.1X authentication
+   - MAC filtering
+   - DHCP snooping
+   - DAI (Dynamic ARP Inspection)

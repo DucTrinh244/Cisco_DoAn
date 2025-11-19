@@ -1,0 +1,118 @@
+! ==== ALL SWITCHES - Security Hardening ====
+enable
+configure terminal
+
+! === Disable unused services ===
+no ip http server
+no ip http secure-server
+no cdp run
+no lldp run
+no ip source-route
+no ip bootp server
+
+! === Enable password encryption ===
+service password-encryption
+
+! === Set strong passwords ===
+enable secret Resort#Secure2025!
+username admin privilege 15 secret Resort#Admin2025!
+
+! === Console security ===
+line console 0
+ password Resort#Console2025
+ login local
+ exec-timeout 10 0
+ logging synchronous
+
+! === VTY security (SSH only) ===
+line vty 0 15
+ transport input ssh
+ login local
+ exec-timeout 10 0
+ access-class SSH-ACCESS in
+
+! === SSH configuration ===
+ip domain-name resort.local
+crypto key generate rsa modulus 2048
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+
+! === ACL for SSH access ===
+ip access-list standard SSH-ACCESS
+ permit 10.10.80.0 0.0.0.63
+ deny any log
+
+! === SNMP v3 (secure) ===
+no snmp-server community public
+no snmp-server community private
+snmp-server group ADMIN-GROUP v3 priv
+snmp-server user admin ADMIN-GROUP v3 auth sha ResortAuth123! priv aes 128 ResortPriv123!
+
+! === Port Security on Access Switches ===
+interface range FastEthernet0/1-24
+ switchport mode access
+ switchport port-security
+ switchport port-security maximum 3
+ switchport port-security violation restrict
+ switchport port-security aging time 2
+ switchport port-security aging type inactivity
+
+! === DHCP Snooping ===
+ip dhcp snooping
+ip dhcp snooping vlan 10,20,30,40,50,60,70
+no ip dhcp snooping information option
+
+! Trust uplink ports
+interface range GigabitEthernet0/1-2
+ ip dhcp snooping trust
+
+! === Dynamic ARP Inspection ===
+ip arp inspection vlan 10,20,30,40,50,60,70
+
+interface range GigabitEthernet0/1-2
+ ip arp inspection trust
+
+! === IP Source Guard ===
+interface range FastEthernet0/1-24
+ ip verify source
+
+! === BPDU Guard & Root Guard ===
+spanning-tree portfast bpduguard default
+
+interface range GigabitEthernet0/1-2
+ spanning-tree guard root
+
+! === Storm Control ===
+interface range FastEthernet0/1-24
+ storm-control broadcast level 10.00
+ storm-control multicast level 10.00
+ storm-control action shutdown
+
+! === Login Banner ===
+banner login ^C
+*************************************************************
+*                                                           *
+*  RESORT NETWORK - AUTHORIZED ACCESS ONLY                  *
+*  Unauthorized access is prohibited and will be            *
+*  prosecuted to the full extent of the law.                *
+*  All activity is monitored and logged.                    *
+*                                                           *
+*************************************************************
+^C
+
+! === Logging ===
+logging buffered 51200 informational
+logging console critical
+logging monitor informational
+logging trap informational
+logging facility local5
+logging source-interface Vlan80
+logging host 10.10.80.10
+
+! === NTP Configuration ===
+ntp server 10.10.80.10
+clock timezone ICT 7
+
+end
+write memory

@@ -1,0 +1,11 @@
+! Check VLAN 70 connectivity
+ping 10.10.70.10
+show mac address-table vlan 70
+show interfaces trunk
+
+! Check port security
+show port-security interface fa0/1
+
+! Solution - disable port security temporarily
+interface fa0/1
+ no switchport port-security

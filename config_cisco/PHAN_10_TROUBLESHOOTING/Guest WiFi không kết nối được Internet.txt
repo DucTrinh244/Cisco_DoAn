@@ -1,0 +1,14 @@
+! Check on Core1
+show ip route 0.0.0.0
+show interface Vlan10
+show access-list | include 10.10.10.0
+
+! Check on Firewall
+show nat
+show route | include 0.0.0.0
+show access-list GUEST-BLOCK
+
+! Solution
+interface Vlan10
+ ip address 10.10.10.1 255.255.252.0
+ no shutdown

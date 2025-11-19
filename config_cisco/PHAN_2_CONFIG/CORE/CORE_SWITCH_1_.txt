@@ -1,0 +1,229 @@
+enable
+configure terminal
+hostname Core1-Primary
+!
+ip routing
+!
+! ===== VLAN CREATION =====
+vlan 10
+ name GUEST-WIFI
+vlan 20
+ name ROOM-DEVICES
+vlan 30
+ name ENTERTAINMENT
+vlan 40
+ name RECEPTION
+vlan 50
+ name CONFERENCE
+vlan 60
+ name FACILITIES
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+vlan 99
+ name DMZ
+!
+! ===== SVI INTERFACES (Gateway) =====
+interface Vlan10
+ description Gateway-GUEST-WIFI
+ ip address 10.10.10.1 255.255.252.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan20
+ description Gateway-ROOM-DEVICES
+ ip address 10.10.20.1 255.255.254.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan30
+ description Gateway-ENTERTAINMENT
+ ip address 10.10.30.1 255.255.255.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan40
+ description Gateway-RECEPTION
+ ip address 10.10.40.1 255.255.255.128
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan50
+ description Gateway-CONFERENCE
+ ip address 10.10.50.1 255.255.255.128
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan60
+ description Gateway-FACILITIES
+ ip address 10.10.60.1 255.255.255.192
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan70
+ description Gateway-SECURITY
+ ip address 10.10.70.1 255.255.255.0
+ ip helper-address 192.168.99.30
+ no shutdown
+!
+interface Vlan80
+ description Gateway-MANAGEMENT
+ ip address 10.10.80.1 255.255.255.192
+ no shutdown
+!
+interface Vlan99
+ description Gateway-DMZ
+ ip address 192.168.99.254 255.255.255.0
+ no shutdown
+!
+! ===== PHYSICAL INTERFACES =====
+interface GigabitEthernet1/0/1
+ description To-Firewall-g1/6
+ no switchport
+ ip address 10.10.254.2 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/0/5
+ description To-Core2
+ no switchport
+ ip address 10.10.255.1 255.255.255.252
+ no shutdown
+!
+interface GigabitEthernet1/0/24
+ description To-DISS-A
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ no shutdown
+!
+interface GigabitEthernet1/0/23
+ description To-DISS-B
+ switchport trunk encapsulation dot1q
+ switchport mode trunk
+ switchport trunk allowed vlan 10,20,30,40,50,60,70,80
+ no shutdown
+!
+! ===== HSRP CONFIGURATION =====
+interface Vlan10
+ standby 10 ip 10.10.10.254
+ standby 10 priority 110
+ standby 10 preempt
+!
+interface Vlan20
+ standby 20 ip 10.10.20.254
+ standby 20 priority 110
+ standby 20 preempt
+!
+interface Vlan30
+ standby 30 ip 10.10.30.254
+ standby 30 priority 110
+ standby 30 preempt
+!
+interface Vlan40
+ standby 40 ip 10.10.40.254
+ standby 40 priority 110
+ standby 40 preempt
+!
+interface Vlan50
+ standby 50 ip 10.10.50.254
+ standby 50 priority 110
+ standby 50 preempt
+!
+interface Vlan60
+ standby 60 ip 10.10.60.254
+ standby 60 priority 110
+ standby 60 preempt
+!
+interface Vlan70
+ standby 70 ip 10.10.70.254
+ standby 70 priority 110
+ standby 70 preempt
+!
+interface Vlan80
+ standby 80 ip 10.10.80.254
+ standby 80 priority 110
+ standby 80 preempt
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+spanning-tree vlan 10,20,30,40,50,60,70,80 priority 4096
+!
+! ===== ROUTING =====
+ip route 0.0.0.0 0.0.0.0 10.10.254.1
+ip route 203.0.114.0 255.255.255.252 10.10.254.1
+!
+! ===== DHCP EXCLUDED ADDRESSES =====
+ip dhcp excluded-address 10.10.10.1 10.10.10.50
+ip dhcp excluded-address 10.10.20.1 10.10.20.50
+ip dhcp excluded-address 10.10.30.1 10.10.30.50
+ip dhcp excluded-address 10.10.40.1 10.10.40.50
+ip dhcp excluded-address 10.10.50.1 10.10.50.50
+ip dhcp excluded-address 10.10.60.1 10.10.60.20
+ip dhcp excluded-address 10.10.70.1 10.10.70.50
+ip dhcp excluded-address 10.10.80.1 10.10.80.50
+!
+! ===== DHCP POOLS =====
+ip dhcp pool GUEST-WIFI
+ network 10.10.10.0 255.255.252.0
+ default-router 10.10.10.1
+ dns-server 8.8.8.8 8.8.4.4
+ lease 0 2 0
+!
+ip dhcp pool ROOM-DEVICES
+ network 10.10.20.0 255.255.254.0
+ 
+ default-router 10.10.20.1
+ dns-server 192.168.99.30
+ option 150 ip 10.10.80.10
+!
+ip dhcp pool ENTERTAINMENT
+ network 10.10.30.0 255.255.255.0
+ default-router 10.10.30.1
+ dns-server 192.168.99.30
+!
+ip dhcp pool RECEPTION
+ network 10.10.40.0 255.255.255.128
+ default-router 10.10.40.1
+ dns-server 192.168.99.30
+!
+ip dhcp pool CONFERENCE
+ network 10.10.50.0 255.255.255.128
+ default-router 10.10.50.1
+ dns-server 192.168.99.30
+!
+ip dhcp pool FACILITIES
+ network 10.10.60.0 255.255.255.192
+ default-router 10.10.60.1
+ dns-server 192.168.99.30
+!
+ip dhcp pool SECURITY
+ network 10.10.70.0 255.255.255.0
+ default-router 10.10.70.1
+ dns-server 192.168.99.30
+!
+! ===== QoS CONFIGURATION =====
+mls qos
+!
+class-map match-all VOICE
+ match ip dscp ef
+class-map match-all VIDEO
+ match ip dscp af41
+class-map match-all CRITICAL-DATA
+ match ip dscp af31
+!
+policy-map QOS-POLICY
+ class VOICE
+  priority percent 20
+ class VIDEO
+  bandwidth percent 30
+ class CRITICAL-DATA
+  bandwidth percent 25
+ class class-default
+  fair-queue
+!
+interface range GigabitEthernet1/0/23-24
+ service-policy output QOS-POLICY
+!
+end
+write memory

@@ -1,0 +1,13 @@
+# Test từ PC trong VLAN 30
+ping 10.10.30.1          # Gateway
+ping 10.10.80.10         # Core1
+ping 192.168.99.20       # Web Server
+ping 8.8.8.8             # Internet
+
+# Test từ Guest WiFi (VLAN 10)
+ping 10.10.30.1          # Should FAIL
+ping 8.8.8.8             # Should SUCCESS
+
+# Test Camera Access
+ping 10.10.70.101        # Camera 1
+ssh admin@10.10.70.10    # NVR

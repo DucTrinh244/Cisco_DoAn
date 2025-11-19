@@ -1,0 +1,50 @@
+enable
+configure terminal
+hostname AccessServer-ANNINH
+!
+! ===== VLAN CREATION =====
+vlan 70
+ name SECURITY
+vlan 80
+ name MANAGEMENT
+!
+! ===== TRUNK TO DISTRIBUTION =====
+interface GigabitEthernet0/1
+ description To-DISS-A-Gi1/0/22
+ switchport mode trunk
+ switchport trunk allowed vlan 70,80
+ no shutdown
+!
+interface GigabitEthernet0/2
+ description To-DISS-B-Gi1/0/22
+ switchport mode trunk
+ switchport trunk allowed vlan 70,80
+ no shutdown
+!
+! ===== SERVER PORTS =====
+interface FastEthernet0/1
+ description Server5-ANNINH
+ switchport mode access
+ switchport access vlan 70
+ spanning-tree portfast
+ no shutdown
+!
+interface FastEthernet0/2
+ description Server6-ANNINH (NVR)
+ switchport mode access
+ switchport access vlan 70
+ spanning-tree portfast
+ no shutdown
+!
+! ===== SPANNING TREE =====
+spanning-tree mode rapid-pvst
+!
+! ===== MANAGEMENT =====
+interface Vlan80
+ ip address 10.10.80.33 255.255.255.192
+ no shutdown
+!
+ip default-gateway 10.10.80.1
+!
+end
+write memory

@@ -1,0 +1,29 @@
+### Cấu hình Network cho Camera
+```
+VLAN: 70 (SECURITY)
+IP Range: 10.10.70.100 - 10.10.70.200
+Gateway: 10.10.70.1
+DNS: 192.168.99.30
+NVR Server: 10.10.70.10
+
+Camera List:
+- Cam1 (Bar): 10.10.70.101
+- Cam2 (Bar): 10.10.70.102
+- Cam3 (Bar): 10.10.70.103
+- Cam4 (An Ninh): 10.10.70.104
+- Cam5 (Phòng A): 10.10.70.105
+- Cam6 (Phòng B): 10.10.70.106
+- Cam7 (Phòng C): 10.10.70.107
+- Cam8 (Phòng D): 10.10.70.108
+- Cam9 (Gym): 10.10.70.109
+- Cam10 (Lưu Niệm): 10.10.70.110
+- Cam11 (Tiếp Khách): 10.10.70.111
+- Cam12 (Lễ Tân): 10.10.70.112
+- Cam13 (Phòng Họp): 10.10.70.113
+- Cam14 (Hội Nghị): 10.10.70.114
+
+Streaming Protocol: RTSP
+Recording: 24/7 to NVR
+Resolution: 1080p
+FPS: 15-25
+Bitrate: 2-4 Mbps
